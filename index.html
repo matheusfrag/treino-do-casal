@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treino do Casal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13; --card: #1a1a22; --border: #2a2a38;
+    --a-color: #e63946; --b-color: #2196f3; --c-color: #4caf50;
+    --a-light: #ff6b7a; --b-light: #64b5f6; --c-light: #81c784;
+    --text: #f0f0f5; --muted: #8888aa; --tag: #252535;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Nunito',sans-serif; min-height:100vh; padding:24px 16px 40px; }
+
+  header { text-align:center; margin-bottom:32px; }
+  .logo { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:4px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+  h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(36px,8vw,56px); letter-spacing:2px; line-height:1; background:linear-gradient(135deg,#e63946,#2196f3,#4caf50); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
+  .subtitle { font-size:13px; color:var(--muted); letter-spacing:1px; }
+
+  .profiles { display:flex; gap:10px; margin-bottom:28px; justify-content:center; }
+  .profile-chip { background:var(--tag); border:1px solid var(--border); border-radius:100px; padding:6px 14px; font-size:12px; font-weight:700; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  .profile-chip span { color:var(--text); }
+
+  .tab-bar { display:flex; gap:8px; margin-bottom:20px; background:var(--card); border-radius:14px; padding:6px; border:1px solid var(--border); }
+  .tab { flex:1; padding:10px; border-radius:10px; border:none; background:transparent; cursor:pointer; font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; color:var(--muted); transition:all 0.25s ease; }
+  .tab.active-a { background:var(--a-color); color:white; }
+  .tab.active-b { background:var(--b-color); color:white; }
+  .tab.active-c { background:var(--c-color); color:white; }
+
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* Section header com contador de progresso */
+  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; padding:16px 18px; border-radius:14px; border:1px solid var(--border); }
+  .section-header.a { background:linear-gradient(135deg,rgba(230,57,70,.15),rgba(230,57,70,.05)); border-color:rgba(230,57,70,.3); }
+  .section-header.b { background:linear-gradient(135deg,rgba(33,150,243,.15),rgba(33,150,243,.05)); border-color:rgba(33,150,243,.3); }
+  .section-header.c { background:linear-gradient(135deg,rgba(76,175,80,.15),rgba(76,175,80,.05)); border-color:rgba(76,175,80,.3); }
+  .section-header-right { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+  .progress-count { font-size:12px; font-weight:800; color:var(--muted); }
+  .reset-btn { font-size:9px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); background:var(--tag); border:1px solid var(--border); border-radius:6px; padding:3px 8px; cursor:pointer; transition:opacity .2s; }
+  .reset-btn:active { opacity:.6; }
+
+  /* Barra de progresso */
+  .progress-wrap { height:3px; background:var(--border); border-radius:4px; margin-bottom:14px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:4px; transition:width .4s ease; width:0%; }
+  .progress-fill.a { background:var(--a-color); }
+  .progress-fill.b { background:var(--b-color); }
+  .progress-fill.c { background:var(--c-color); }
+
+  .section-badge { font-family:'Bebas Neue',sans-serif; font-size:32px; width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-badge.a { background:var(--a-color); color:white; }
+  .section-badge.b { background:var(--b-color); color:white; }
+  .section-badge.c { background:var(--c-color); color:white; }
+  .section-info h2 { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; }
+  .section-info p { font-size:11px; color:var(--muted); margin-top:2px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; }
+
+  .muscle-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .muscle-tag { background:var(--tag); border:1px solid var(--border); border-radius:100px; padding:3px 10px; font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); }
+
+  .exercise-list { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+
+  .exercise-card { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color .2s, opacity .3s; }
+  .exercise-card:hover { border-color:var(--muted); }
+
+  /* Estado "feito" */
+  .exercise-card.done { opacity:0.55; }
+  .exercise-card.done .ex-name { text-decoration:line-through; }
+  .exercise-card.done .ex-check { background:#4caf50 !important; border-color:#4caf50 !important; color:white !important; }
+
+  .exercise-item { padding:12px 14px; display:flex; align-items:center; gap:10px; user-select:none; }
+
+  /* Botão de check circular */
+  .ex-check {
+    width:28px; height:28px; border-radius:50%;
+    border:2px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; cursor:pointer;
+    transition:all .2s;
+    font-size:14px; font-weight:900;
+    color:transparent;
+    background:transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ex-check:active { transform:scale(.85); }
+
+  .ex-num { font-family:'Bebas Neue',sans-serif; font-size:16px; color:var(--muted); width:18px; text-align:center; flex-shrink:0; }
+  .ex-info { flex:1; min-width:0; }
+  .ex-name { font-size:13px; font-weight:800; color:var(--text); line-height:1.3; text-transform:uppercase; letter-spacing:.3px; }
+  .ex-detail { font-size:11px; color:var(--muted); margin-top:2px; font-weight:600; }
+  .ex-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+
+  .ex-badge { font-size:9px; font-weight:800; letter-spacing:.5px; padding:2px 7px; border-radius:100px; text-transform:uppercase; }
+  .ex-badge.comp { background:rgba(255,200,0,.15); color:#ffc800; border:1px solid rgba(255,200,0,.3); }
+  .ex-badge.iso  { background:rgba(136,136,170,.15); color:var(--muted); border:1px solid var(--border); }
+  .ex-badge.core { background:rgba(156,39,176,.15); color:#ce93d8; border:1px solid rgba(156,39,176,.3); }
+
+  .ex-toggle { width:26px; height:26px; border-radius:6px; background:var(--tag); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); transition:transform .25s ease,background .2s; flex-shrink:0; cursor:pointer; -webkit-tap-highlight-color: transparent; }
+  .exercise-card.open .ex-toggle { transform:rotate(180deg); background:var(--border); color:var(--text); }
+
+  /* Área de expansão — agora com link YouTube */
+  .expand-area { max-height:0; overflow:hidden; transition:max-height .35s ease; }
+  .exercise-card.open .expand-area { max-height:80px; }
+
+  .yt-link-area { border-top:1px solid var(--border); padding:10px 14px; display:flex; justify-content:center; }
+  .yt-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    background:#ff0000; color:white; text-decoration:none;
+    border-radius:10px; padding:9px 20px;
+    font-family:'Nunito',sans-serif; font-size:13px; font-weight:800;
+    letter-spacing:.3px; transition:opacity .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .yt-btn:active { opacity:.75; }
+
+  .tip-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:16px; }
+  .tip-box .tip-label { font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .tip-box p { font-size:12px; color:var(--text); line-height:1.5; font-weight:600; }
+
+  .cardio-box { border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:10px; }
+  .cardio-box.a { background:rgba(230,57,70,.08); border:1px solid rgba(230,57,70,.2); }
+  .cardio-box.b { background:rgba(33,150,243,.08); border:1px solid rgba(33,150,243,.2); }
+  .cardio-box.c { background:rgba(76,175,80,.08); border:1px solid rgba(76,175,80,.2); }
+  .cardio-icon { font-size:22px; }
+  .cardio-text .cardio-label { font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .cardio-text p { font-size:12px; font-weight:700; margin-top:2px; }
+
+  .legend { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+  .legend-dot { width:8px; height:8px; border-radius:2px; }
+  .legend-hint { margin-left:auto; font-size:9px; color:var(--muted); font-weight:700; letter-spacing:.5px; }
+
+  .freq-note { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin-top:20px; text-align:center; }
+  .freq-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:1px; color:var(--muted); margin-bottom:8px; }
+  .freq-days { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
+  .freq-day { padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
+  .freq-day.a { background:rgba(230,57,70,.15); color:var(--a-light); border:1px solid rgba(230,57,70,.3); }
+  .freq-day.b { background:rgba(33,150,243,.15); color:var(--b-light); border:1px solid rgba(33,150,243,.3); }
+  .freq-day.c { background:rgba(76,175,80,.15); color:var(--c-light); border:1px solid rgba(76,175,80,.3); }
+  .freq-day.rest { background:var(--tag); color:var(--muted); border:1px solid var(--border); }
+
+
+  /* Toast de conclusão */
+  .toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(120px);
+    background:#4caf50; color:white;
+    border-radius:14px; padding:13px 22px;
+    font-size:14px; font-weight:800;
+    opacity:0; transition:all .4s cubic-bezier(.34,1.56,.64,1);
+    z-index:999; white-space:nowrap; pointer-events:none;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+
+<header>
+  <div class="logo">💪 Personal Plan</div>
+  <h1>TREINO DO CASAL</h1>
+  <div class="subtitle">Split ABC · Push / Pull / Legs</div>
+</header>
+
+<div class="profiles">
+  <div class="profile-chip">👨 <span>Matheus</span></div>
+  <div class="profile-chip">👩 <span>Paula</span></div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#ffc800"></div>Composto</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8888aa"></div>Isolado</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ce93d8"></div>Core</div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active-a" onclick="showTab('a')">Treino A</button>
+  <button class="tab" onclick="showTab('b')">Treino B</button>
+  <button class="tab" onclick="showTab('c')">Treino C</button>
+</div>
+
+<!-- ==================== TREINO A ==================== -->
+<div class="panel active" id="panel-a">
+  <div class="section-header a">
+    <div class="section-badge a">A</div>
+    <div class="section-info"><h2>PUSH — EMPURRAR</h2><p>Peito · Ombro · Tríceps</p></div>
+    <div class="section-header-right">
+      <div class="progress-count" id="count-a">0 / 8</div>
+      <div class="reset-btn" onclick="resetTreino('a')">↺ Resetar</div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill a" id="prog-a"></div></div>
+  <div class="muscle-tags">
+    <span class="muscle-tag">Peitoral</span><span class="muscle-tag">Deltóide</span><span class="muscle-tag">Tríceps</span><span class="muscle-tag">Core</span>
+  </div>
+  <div class="exercise-list">
+
+    <div class="exercise-card" id="card-a1">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a1')">✓</div>
+        <div class="ex-num">1</div>
+        <div class="ex-info"><div class="ex-name">Supino com Halteres no Banco Reto</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('a1')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a1">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=49Ax5_mDsvM" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a2">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a2')">✓</div>
+        <div class="ex-num">2</div>
+        <div class="ex-info"><div class="ex-name">Crucifixo no Banco 30° (Inclinado)</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a2')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a2">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=A_P7qpamUtA" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a3">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a3')">✓</div>
+        <div class="ex-num">3</div>
+        <div class="ex-info"><div class="ex-name">Peitoral Voador (Máquina)</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a3')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a3">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=-lKGLb0FdJo" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a4">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a4')">✓</div>
+        <div class="ex-num">4</div>
+        <div class="ex-info"><div class="ex-name">Desenvolvimento no Aparelho — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('a4')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a4">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=Q7K6DI9R-A8" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a5">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a5')">✓</div>
+        <div class="ex-num">5</div>
+        <div class="ex-info"><div class="ex-name">Elevação Lateral com Halteres — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a5')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a5">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=dnbyKDEyHx4" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a6">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a6')">✓</div>
+        <div class="ex-num">6</div>
+        <div class="ex-info"><div class="ex-name">Tríceps Corda no Cross Over</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a6')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a6">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=qhDIeDBRQFM" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a7">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a7')">✓</div>
+        <div class="ex-num">7</div>
+        <div class="ex-info"><div class="ex-name">Tríceps Testa com Halteres — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a7')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a7">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=djuGLhcU8LA" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-a8">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('a8')">✓</div>
+        <div class="ex-num">8</div>
+        <div class="ex-info"><div class="ex-name">Abdominal Supra no Solo — INI</div><div class="ex-detail">3 séries · 20 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge core">Core</div><div class="ex-toggle" onclick="toggle('a8')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-a8">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=mfkfUkj24co" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="cardio-box a"><div class="cardio-icon">🚴</div><div class="cardio-text"><div class="cardio-label">Cardio Pós-Treino</div><p>20 min esteira (caminhada inclinada) ou bike</p></div></div>
+</div>
+
+<!-- ==================== TREINO B ==================== -->
+<div class="panel" id="panel-b">
+  <div class="section-header b">
+    <div class="section-badge b">B</div>
+    <div class="section-info"><h2>PULL — PUXAR</h2><p>Costas · Bíceps · Lombar</p></div>
+    <div class="section-header-right">
+      <div class="progress-count" id="count-b">0 / 8</div>
+      <div class="reset-btn" onclick="resetTreino('b')">↺ Resetar</div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill b" id="prog-b"></div></div>
+  <div class="muscle-tags">
+    <span class="muscle-tag">Latíssimo</span><span class="muscle-tag">Rombóide</span><span class="muscle-tag">Bíceps</span><span class="muscle-tag">Lombar</span><span class="muscle-tag">Core</span>
+  </div>
+  <div class="exercise-list">
+
+    <div class="exercise-card" id="card-b1">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b1')">✓</div>
+        <div class="ex-num">1</div>
+        <div class="ex-info"><div class="ex-name">Pulley Frente Supinada — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('b1')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b1">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=7cCiQUdIXWw" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b2">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b2')">✓</div>
+        <div class="ex-num">2</div>
+        <div class="ex-info"><div class="ex-name">Remada Articulada Neutra</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('b2')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b2">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=i3FScctBKvc" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b3">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b3')">✓</div>
+        <div class="ex-num">3</div>
+        <div class="ex-info"><div class="ex-name">Remada Baixa Neutra Fechada — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('b3')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b3">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=mUgFn3aMAP4" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b4">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b4')">✓</div>
+        <div class="ex-num">4</div>
+        <div class="ex-info"><div class="ex-name">Extensão de Tronco no Banco Romano</div><div class="ex-detail">3 séries · 15–20 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('b4')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b4">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=84NwE5NSg2E" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b5">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b5')">✓</div>
+        <div class="ex-num">5</div>
+        <div class="ex-info"><div class="ex-name">Rosca Direta com Halteres — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('b5')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b5">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=p2S4e8xRCkI" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b6">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b6')">✓</div>
+        <div class="ex-num">6</div>
+        <div class="ex-info"><div class="ex-name">Rosca Martelo Alternada</div><div class="ex-detail">3 séries · 12 reps cada lado · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('b6')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b6">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=xvvjkh3Aa4s" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b7">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b7')">✓</div>
+        <div class="ex-num">7</div>
+        <div class="ex-info"><div class="ex-name">Abdominal Infra no Solo — INI</div><div class="ex-detail">3 séries · 15–20 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge core">Core</div><div class="ex-toggle" onclick="toggle('b7')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b7">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=oq4Xb_xI618" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-b8">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('b8')">✓</div>
+        <div class="ex-num">8</div>
+        <div class="ex-info"><div class="ex-name">Abdominal Ponte (Vácuo) — INI</div><div class="ex-detail">3 séries · 30s sustentado · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge core">Core</div><div class="ex-toggle" onclick="toggle('b8')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-b8">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=lyLSeyKaGLQ" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="cardio-box b"><div class="cardio-icon">🚴</div><div class="cardio-text"><div class="cardio-label">Cardio Pós-Treino</div><p>20 min Cycle Indoor ou elíptico</p></div></div>
+</div>
+
+<!-- ==================== TREINO C ==================== -->
+<div class="panel" id="panel-c">
+  <div class="section-header c">
+    <div class="section-badge c">C</div>
+    <div class="section-info"><h2>LEGS — PERNAS</h2><p>Quad · Posterior · Glúteo · Panturrilha</p></div>
+    <div class="section-header-right">
+      <div class="progress-count" id="count-c">0 / 8</div>
+      <div class="reset-btn" onclick="resetTreino('c')">↺ Resetar</div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill c" id="prog-c"></div></div>
+  <div class="muscle-tags">
+    <span class="muscle-tag">Quadríceps</span><span class="muscle-tag">Isquiotibiais</span><span class="muscle-tag">Glúteos ⭐</span><span class="muscle-tag">Adutores</span><span class="muscle-tag">Abdutores</span><span class="muscle-tag">Panturrilha</span>
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">⭐ Prioridade Paula</div>
+    <p>Glúteos são foco central deste treino. Elevação de Quadril e Stiff são obrigatórios — nunca pule esses dois exercícios.</p>
+  </div>
+  <div class="exercise-list">
+
+    <div class="exercise-card" id="card-c1">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c1')">✓</div>
+        <div class="ex-num">1</div>
+        <div class="ex-info"><div class="ex-name">Agachamento na Barra Guiada</div><div class="ex-detail">4 séries · 12–15 reps · descanso 75s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('c1')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c1">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=piW3CSOV3pw" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c2">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c2')">✓</div>
+        <div class="ex-num">2</div>
+        <div class="ex-info"><div class="ex-name">Leg Press 45</div><div class="ex-detail">3 séries · 15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('c2')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c2">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=OIVAKyfIqEI" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c3">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c3')">✓</div>
+        <div class="ex-num">3</div>
+        <div class="ex-info"><div class="ex-name">Elevação de Quadril no Solo — INI ⭐</div><div class="ex-detail">4 séries · 15–20 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('c3')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c3">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=pY9qYxyCO_c" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c4">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c4')">✓</div>
+        <div class="ex-num">4</div>
+        <div class="ex-info"><div class="ex-name">Stiff com Halteres ⭐</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('c4')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c4">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=XlGjQYUN4RQ" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c5">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c5')">✓</div>
+        <div class="ex-num">5</div>
+        <div class="ex-info"><div class="ex-name">Mesa Flexora Bilateral — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c5')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c5">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=IR0S2fUrQko" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c6">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c6')">✓</div>
+        <div class="ex-num">6</div>
+        <div class="ex-info"><div class="ex-name">Banco Adutor — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c6')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c6">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=a237zGQR4Ag" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c7">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c7')">✓</div>
+        <div class="ex-num">7</div>
+        <div class="ex-info"><div class="ex-name">Banco Abdutor — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c7')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c7">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=c1Bmt-K65tw" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="card-c8">
+      <div class="exercise-item">
+        <div class="ex-check" onclick="checkExercise('c8')">✓</div>
+        <div class="ex-num">8</div>
+        <div class="ex-info"><div class="ex-name">Panturrilha na Máquina Sentado — INI</div><div class="ex-detail">3 séries · 20 reps · descanso 45s</div></div>
+        <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c8')">▼</div></div>
+      </div>
+      <div class="expand-area" id="exp-c8">
+        <div class="yt-link-area"><a href="https://www.youtube.com/watch?v=spESz-f39Iw" target="_blank" class="yt-btn">▶ Ver no YouTube</a></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="cardio-box c"><div class="cardio-icon">🚶</div><div class="cardio-text"><div class="cardio-label">Cardio Pós-Treino</div><p>15 min caminhada leve (recuperação ativa)</p></div></div>
+</div>
+
+<div class="freq-note">
+  <div class="freq-title">📅 Frequência Sugerida (3–4x por semana)</div>
+  <div class="freq-days">
+    <div class="freq-day a">Seg · A</div>
+    <div class="freq-day b">Ter · B</div>
+    <div class="freq-day rest">Qua · 🛋️</div>
+    <div class="freq-day c">Qui · C</div>
+    <div class="freq-day a">Sex · A</div>
+    <div class="freq-day rest">Sáb · 🛋️</div>
+    <div class="freq-day rest">Dom · 🛋️</div>
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:10px;font-weight:600;">Rotação: A → B → C → A → B → C (independente do dia)</p>
+</div>
+
+<script>
+  // ——— Expand / collapse (link YouTube) ———
+  let openId = null;
+
+  function toggle(id) {
+    const card = document.getElementById('card-' + id);
+    const isOpen = card.classList.contains('open');
+
+    if (openId && openId !== id) {
+      document.getElementById('card-' + openId).classList.remove('open');
+      openId = null;
+    }
+    if (isOpen) {
+      card.classList.remove('open');
+      openId = null;
+    } else {
+      card.classList.add('open');
+      openId = id;
+    }
+  }
+
+  // ——— Checklist ———
+  const EXERCISES = {
+    a: ['a1','a2','a3','a4','a5','a6','a7','a8'],
+    b: ['b1','b2','b3','b4','b5','b6','b7','b8'],
+    c: ['c1','c2','c3','c4','c5','c6','c7','c8']
+  };
+
+  function checkExercise(id) {
+    const card = document.getElementById('card-' + id);
+    const isDone = card.classList.contains('done');
+    if (isDone) {
+      card.classList.remove('done');
+      localStorage.removeItem('pp_' + id);
+    } else {
+      card.classList.add('done');
+      localStorage.setItem('pp_' + id, '1');
+    }
+    updateProgress(id[0]);
+  }
+
+  function updateProgress(tab) {
+    const ids = EXERCISES[tab];
+    const done = ids.filter(id => document.getElementById('card-' + id).classList.contains('done')).length;
+    const total = ids.length;
+    document.getElementById('count-' + tab).textContent = done + ' / ' + total;
+    document.getElementById('prog-' + tab).style.width = (done / total * 100) + '%';
+    if (done === total) showToast('🎉 Treino ' + tab.toUpperCase() + ' concluído!');
+  }
+
+  function resetTreino(tab) {
+    EXERCISES[tab].forEach(id => {
+      document.getElementById('card-' + id).classList.remove('done');
+      localStorage.removeItem('pp_' + id);
+    });
+    updateProgress(tab);
+  }
+
+  // ——— Toast ———
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  // ——— Troca de aba ———
+  function showTab(tab) {
+    if (openId) {
+      document.getElementById('card-' + openId).classList.remove('open');
+      openId = null;
+    }
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-a','active-b','active-c'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    const idx = {a:0,b:1,c:2}[tab];
+    document.querySelectorAll('.tab')[idx].classList.add('active-' + tab);
+  }
+
+  // ——— Clicar no card inteiro expande; check não propaga ———
+  (function initCardClicks() {
+    document.querySelectorAll('.exercise-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        if (e.target.closest('.ex-check') || e.target.closest('.ex-toggle')) return;
+        const card = this.closest('.exercise-card');
+        const id = card.id.replace('card-', '');
+        toggle(id);
+      });
+    });
+  })();
+
+  // ——— Restaurar estado do localStorage ———
+  (function loadState() {
+    ['a','b','c'].forEach(tab => {
+      EXERCISES[tab].forEach(id => {
+        if (localStorage.getItem('pp_' + id)) {
+          document.getElementById('card-' + id).classList.add('done');
+        }
+      });
+      updateProgress(tab);
+    });
+  })();
+</script>
+</body>
+</html>
