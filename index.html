@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Treino do Casal</title>
+<meta name="theme-color" content="#0f0f13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -102,7 +106,7 @@
 
   /* Área de expansão — agora com link YouTube */
   .expand-area { max-height:0; overflow:hidden; transition:max-height .35s ease; }
-  .exercise-card.open .expand-area { max-height:360px; }
+  .exercise-card.open .expand-area { max-height:480px; }
 
   .yt-link-area { border-top:1px solid var(--border); padding:10px 14px; display:flex; justify-content:center; }
   .yt-btn {
@@ -125,6 +129,16 @@
 
   .muscle-svg-area { border-top:1px solid var(--border); padding:12px 14px; display:flex; justify-content:center; }
   .muscle-svg-area svg { opacity:.85; }
+
+  .session-stats { font-size:10px; color:var(--muted); font-weight:700; letter-spacing:.3px; margin-top:2px; }
+  .weight-up { color:#4caf50; }
+  .weight-down { color:#e63946; }
+  .weight-same { color:var(--muted); }
+
+  .note-area { border-top:1px solid var(--border); padding:8px 14px; }
+  .note-area textarea { width:100%; background:var(--tag); border:1px solid var(--border); border-radius:8px; padding:8px 10px; color:var(--text); font-size:12px; font-family:'Nunito',sans-serif; resize:none; font-weight:600; line-height:1.4; }
+  .note-area textarea::placeholder { color:var(--muted); }
+  .note-area textarea:focus { outline:none; border-color:var(--muted); }
 
   .tip-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:16px; }
   .tip-box .tip-label { font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
@@ -601,13 +615,47 @@
     updateProgress(id[0]);
   }
 
+  let completedThisSession = {a:false, b:false, c:false};
+
   function updateProgress(tab) {
     const ids = EXERCISES[tab];
     const done = ids.filter(id => document.getElementById('card-' + id).classList.contains('done')).length;
     const total = ids.length;
     document.getElementById('count-' + tab).textContent = done + ' / ' + total;
     document.getElementById('prog-' + tab).style.width = (done / total * 100) + '%';
-    if (done === total) showToast('🎉 Treino ' + tab.toUpperCase() + ' concluído!');
+    if (done === total && !completedThisSession[tab]) {
+      completedThisSession[tab] = true;
+      const countKey = 'pp_count_' + tab;
+      const count = parseInt(localStorage.getItem(countKey) || '0') + 1;
+      localStorage.setItem(countKey, count);
+      localStorage.setItem('pp_last_' + tab, todayISO());
+      showToast('🎉 Treino ' + tab.toUpperCase() + ' concluído! (' + count + 'x)');
+    }
+    if (done < ids.length) completedThisSession[tab] = false;
+    updateSessionStats(tab);
+  }
+
+  function daysAgoText(isoDate) {
+    if (!isoDate) return '';
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(isoDate + 'T00:00:00');
+    const diff = Math.round((today - target) / 86400000);
+    if (diff <= 0) return 'hoje';
+    if (diff === 1) return 'ontem';
+    return 'há ' + diff + ' dias';
+  }
+
+  function updateSessionStats(tab) {
+    const el = document.getElementById('stats-' + tab);
+    if (!el) return;
+    const count = localStorage.getItem('pp_count_' + tab);
+    const last = localStorage.getItem('pp_last_' + tab);
+    if (!count || count === '0') {
+      el.textContent = 'Nenhum treino completo';
+    } else {
+      el.textContent = count + 'x completo · ' + daysAgoText(last);
+    }
   }
 
   function resetTreino(tab) {
@@ -645,7 +693,7 @@
   (function initCardClicks() {
     document.querySelectorAll('.exercise-item').forEach(item => {
       item.addEventListener('click', function(e) {
-        if (e.target.closest('.ex-check') || e.target.closest('.ex-toggle') || e.target.closest('.weight-field')) return;
+        if (e.target.closest('.ex-check') || e.target.closest('.ex-toggle') || e.target.closest('.weight-field') || e.target.closest('.note-area')) return;
         const card = this.closest('.exercise-card');
         const id = card.id.replace('card-', '');
         toggle(id);
@@ -707,12 +755,52 @@
     return s;
   }
 
-  // ——— Peso ———
+  // ——— Peso com histórico ———
+  function todayISO() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function pushHistory(id, person, oldVal) {
+    if (!oldVal) return;
+    const hKey = 'pp_wh_' + person + '_' + id;
+    let hist = [];
+    try { hist = JSON.parse(localStorage.getItem(hKey)) || []; } catch(e) {}
+    const today = todayISO();
+    if (hist.length && hist[hist.length-1].d === today) {
+      hist[hist.length-1].v = parseFloat(oldVal);
+    } else {
+      hist.push({v:parseFloat(oldVal), d:today});
+    }
+    if (hist.length > 10) hist = hist.slice(-10);
+    localStorage.setItem(hKey, JSON.stringify(hist));
+  }
+
   function saveWeight(id, person, value) {
     const key = 'pp_w_' + person + '_' + id;
-    if (value === '' || value === null) localStorage.removeItem(key);
-    else localStorage.setItem(key, value);
+    const oldVal = localStorage.getItem(key);
+    if (value === '' || value === null) {
+      localStorage.removeItem(key);
+    } else {
+      if (oldVal && oldVal !== value) pushHistory(id, person, oldVal);
+      localStorage.setItem(key, value);
+    }
     updateWeightDisplay(id);
+  }
+
+  function getWeightDelta(id, person) {
+    const current = localStorage.getItem('pp_w_' + person + '_' + id);
+    if (!current) return '';
+    const hKey = 'pp_wh_' + person + '_' + id;
+    let hist = [];
+    try { hist = JSON.parse(localStorage.getItem(hKey)) || []; } catch(e) {}
+    if (!hist.length) return '';
+    const last = hist[hist.length-1].v;
+    const cur = parseFloat(current);
+    const diff = cur - last;
+    if (diff > 0) return ' <span class="weight-up">↑' + diff + '</span>';
+    if (diff < 0) return ' <span class="weight-down">↓' + Math.abs(diff) + '</span>';
+    return ' <span class="weight-same">=</span>';
   }
 
   function updateWeightDisplay(id) {
@@ -720,9 +808,11 @@
     if (!el) return;
     const m = localStorage.getItem('pp_w_m_' + id);
     const p = localStorage.getItem('pp_w_p_' + id);
-    const mTxt = m ? m + 'kg' : '—';
-    const pTxt = p ? p + 'kg' : '—';
-    el.textContent = 'M: ' + mTxt + '  ·  P: ' + pTxt;
+    const mTxt = m ? m + 'kg' + getWeightDelta(id,'m') : '—';
+    const pTxt = p ? p + 'kg' + getWeightDelta(id,'p') : '—';
+    const note = localStorage.getItem('pp_note_' + id);
+    const noteIcon = note ? ' 📝' : '';
+    el.innerHTML = 'M: ' + mTxt + '  ·  P: ' + pTxt + noteIcon;
   }
 
   // ——— Injetar campos de peso em todos os cards ———
@@ -771,17 +861,63 @@
     });
   })();
 
+  // ——— Injetar notas rápidas ———
+  (function initNotes() {
+    document.querySelectorAll('.exercise-card').forEach(function(card) {
+      const id = card.id.replace('card-', '');
+      const expandArea = card.querySelector('.expand-area');
+      const ytLink = expandArea.querySelector('.yt-link-area');
+
+      const noteDiv = document.createElement('div');
+      noteDiv.className = 'note-area';
+      noteDiv.innerHTML = '<textarea data-ex="'+id+'" placeholder="Anotação..." rows="2"></textarea>';
+      expandArea.insertBefore(noteDiv, ytLink);
+
+      const ta = noteDiv.querySelector('textarea');
+      const stored = localStorage.getItem('pp_note_' + id);
+      if (stored) ta.value = stored;
+
+      ta.addEventListener('input', function() {
+        const val = this.value.trim();
+        if (val) localStorage.setItem('pp_note_' + this.dataset.ex, val);
+        else localStorage.removeItem('pp_note_' + this.dataset.ex);
+        updateWeightDisplay(this.dataset.ex);
+      });
+    });
+  })();
+
+  // ——— Injetar stats de sessão nos headers ———
+  (function initSessionStats() {
+    ['a','b','c'].forEach(function(tab) {
+      const header = document.querySelector('#panel-' + tab + ' .section-header-right');
+      if (!header) return;
+      const stats = document.createElement('div');
+      stats.className = 'session-stats';
+      stats.id = 'stats-' + tab;
+      header.appendChild(stats);
+      updateSessionStats(tab);
+    });
+  })();
+
   // ——— Restaurar estado do localStorage ———
   (function loadState() {
     ['a','b','c'].forEach(tab => {
+      let doneCount = 0;
       EXERCISES[tab].forEach(id => {
         if (localStorage.getItem('pp_' + id)) {
           document.getElementById('card-' + id).classList.add('done');
+          doneCount++;
         }
       });
+      if (doneCount === EXERCISES[tab].length) completedThisSession[tab] = true;
       updateProgress(tab);
     });
   })();
+
+  // ——— PWA Service Worker ———
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
 </script>
 </body>
 </html>
