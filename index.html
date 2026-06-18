@@ -102,7 +102,7 @@
 
   /* Área de expansão — agora com link YouTube */
   .expand-area { max-height:0; overflow:hidden; transition:max-height .35s ease; }
-  .exercise-card.open .expand-area { max-height:80px; }
+  .exercise-card.open .expand-area { max-height:360px; }
 
   .yt-link-area { border-top:1px solid var(--border); padding:10px 14px; display:flex; justify-content:center; }
   .yt-btn {
@@ -114,6 +114,17 @@
     -webkit-tap-highlight-color: transparent;
   }
   .yt-btn:active { opacity:.75; }
+
+  .ex-weight-display { font-size:11px; color:var(--muted); font-weight:700; margin-top:3px; letter-spacing:.3px; }
+  .weight-inputs { border-top:1px solid var(--border); padding:10px 14px; display:flex; gap:16px; justify-content:center; }
+  .weight-field { display:flex; align-items:center; gap:6px; }
+  .weight-field label { font-size:12px; font-weight:800; color:var(--muted); min-width:14px; text-align:center; }
+  .weight-field input { width:64px; background:var(--tag); border:1px solid var(--border); border-radius:8px; padding:6px 8px; color:var(--text); font-size:13px; font-weight:700; text-align:center; font-family:'Nunito',sans-serif; -webkit-appearance:none; -moz-appearance:textfield; }
+  .weight-field input:focus { outline:none; border-color:var(--muted); }
+  .weight-field span { font-size:11px; color:var(--muted); font-weight:700; }
+
+  .muscle-svg-area { border-top:1px solid var(--border); padding:12px 14px; display:flex; justify-content:center; }
+  .muscle-svg-area svg { opacity:.85; }
 
   .tip-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:16px; }
   .tip-box .tip-label { font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
@@ -227,7 +238,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('a3')">✓</div>
         <div class="ex-num">3</div>
-        <div class="ex-info"><div class="ex-name">Peitoral Voador (Máquina)</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Peitoral Voador (Máquina)</div><div class="ex-detail">3 séries · 15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a3')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-a3">
@@ -251,7 +262,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('a5')">✓</div>
         <div class="ex-num">5</div>
-        <div class="ex-info"><div class="ex-name">Elevação Lateral com Halteres — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Elevação Lateral com Halteres — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a5')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-a5">
@@ -263,7 +274,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('a6')">✓</div>
         <div class="ex-num">6</div>
-        <div class="ex-info"><div class="ex-name">Tríceps Corda no Cross Over</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Tríceps Corda no Cross Over</div><div class="ex-detail">3 séries · 15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a6')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-a6">
@@ -275,7 +286,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('a7')">✓</div>
         <div class="ex-num">7</div>
-        <div class="ex-info"><div class="ex-name">Tríceps Testa com Halteres — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Tríceps Testa com Halteres — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('a7')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-a7">
@@ -287,7 +298,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('a8')">✓</div>
         <div class="ex-num">8</div>
-        <div class="ex-info"><div class="ex-name">Abdominal Supra no Solo — INI</div><div class="ex-detail">3 séries · 20 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Abdominal Supra no Solo — INI</div><div class="ex-detail">3 séries · 20 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge core">Core</div><div class="ex-toggle" onclick="toggle('a8')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-a8">
@@ -367,7 +378,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('b5')">✓</div>
         <div class="ex-num">5</div>
-        <div class="ex-info"><div class="ex-name">Rosca Direta com Halteres — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Rosca Direta com Halteres — INI</div><div class="ex-detail">3 séries · 12–15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('b5')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-b5">
@@ -379,7 +390,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('b6')">✓</div>
         <div class="ex-num">6</div>
-        <div class="ex-info"><div class="ex-name">Rosca Martelo Alternada</div><div class="ex-detail">3 séries · 12 reps cada lado · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Rosca Martelo Alternada</div><div class="ex-detail">3 séries · 12 reps cada lado · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('b6')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-b6">
@@ -391,7 +402,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('b7')">✓</div>
         <div class="ex-num">7</div>
-        <div class="ex-info"><div class="ex-name">Abdominal Infra no Solo — INI</div><div class="ex-detail">3 séries · 15–20 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Abdominal Infra no Solo — INI</div><div class="ex-detail">3 séries · 15–20 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge core">Core</div><div class="ex-toggle" onclick="toggle('b7')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-b7">
@@ -403,7 +414,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('b8')">✓</div>
         <div class="ex-num">8</div>
-        <div class="ex-info"><div class="ex-name">Abdominal Ponte (Vácuo) — INI</div><div class="ex-detail">3 séries · 30s sustentado · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Abdominal Ponte (Vácuo) — INI</div><div class="ex-detail">3 séries · 30s sustentado · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge core">Core</div><div class="ex-toggle" onclick="toggle('b8')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-b8">
@@ -439,7 +450,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('c1')">✓</div>
         <div class="ex-num">1</div>
-        <div class="ex-info"><div class="ex-name">Agachamento na Barra Guiada</div><div class="ex-detail">4 séries · 12–15 reps · descanso 75s</div></div>
+        <div class="ex-info"><div class="ex-name">Agachamento na Barra Guiada</div><div class="ex-detail">4 séries · 12–15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge comp">Comp</div><div class="ex-toggle" onclick="toggle('c1')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-c1">
@@ -499,7 +510,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('c6')">✓</div>
         <div class="ex-num">6</div>
-        <div class="ex-info"><div class="ex-name">Banco Adutor — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Banco Adutor — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c6')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-c6">
@@ -511,7 +522,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('c7')">✓</div>
         <div class="ex-num">7</div>
-        <div class="ex-info"><div class="ex-name">Banco Abdutor — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Banco Abdutor — INI</div><div class="ex-detail">3 séries · 15 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c7')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-c7">
@@ -523,7 +534,7 @@
       <div class="exercise-item">
         <div class="ex-check" onclick="checkExercise('c8')">✓</div>
         <div class="ex-num">8</div>
-        <div class="ex-info"><div class="ex-name">Panturrilha na Máquina Sentado — INI</div><div class="ex-detail">3 séries · 20 reps · descanso 45s</div></div>
+        <div class="ex-info"><div class="ex-name">Panturrilha na Máquina Sentado — INI</div><div class="ex-detail">3 séries · 20 reps · descanso 60s</div></div>
         <div class="ex-right"><div class="ex-badge iso">Iso</div><div class="ex-toggle" onclick="toggle('c8')">▼</div></div>
       </div>
       <div class="expand-area" id="exp-c8">
@@ -634,11 +645,129 @@
   (function initCardClicks() {
     document.querySelectorAll('.exercise-item').forEach(item => {
       item.addEventListener('click', function(e) {
-        if (e.target.closest('.ex-check') || e.target.closest('.ex-toggle')) return;
+        if (e.target.closest('.ex-check') || e.target.closest('.ex-toggle') || e.target.closest('.weight-field')) return;
         const card = this.closest('.exercise-card');
         const id = card.id.replace('card-', '');
         toggle(id);
       });
+    });
+  })();
+
+  // ——— Mapa de músculos por exercício ———
+  const MUSCLE_MAP = {
+    a1:['chest','triceps','shoulder'], a2:['chest'], a3:['chest'],
+    a4:['shoulder','triceps'], a5:['shoulder'], a6:['triceps'],
+    a7:['triceps'], a8:['abs'],
+    b1:['lats','biceps'], b2:['lats','biceps'], b3:['lats','biceps'],
+    b4:['lower-back'], b5:['biceps'], b6:['biceps'],
+    b7:['abs'], b8:['abs'],
+    c1:['quads','glutes'], c2:['quads','glutes'], c3:['glutes','hamstrings'],
+    c4:['hamstrings','glutes'], c5:['hamstrings'], c6:['adductors'],
+    c7:['abductors'], c8:['calves']
+  };
+
+  const TAB_COLORS = { a:'#e63946', b:'#2196f3', c:'#4caf50' };
+
+  // ——— SVG muscular ———
+  function createMuscleSVG(activeMuscles, color) {
+    const b = '#2a2a38';
+    const parts = {
+      chest:      '<ellipse cx="36" cy="44" rx="9" ry="6"/><ellipse cx="52" cy="44" rx="9" ry="6"/>',
+      shoulder:   '<ellipse cx="21" cy="36" rx="6" ry="5"/><ellipse cx="67" cy="36" rx="6" ry="5"/>',
+      biceps:     '<rect x="14" y="43" width="7" height="16" rx="3"/><rect x="67" y="43" width="7" height="16" rx="3"/>',
+      triceps:    '<rect x="10" y="44" width="5" height="14" rx="2"/><rect x="73" y="44" width="5" height="14" rx="2"/>',
+      abs:        '<rect x="38" y="52" width="12" height="18" rx="3"/>',
+      lats:       '<path d="M27,38 L31,56 L35,56 L31,38Z"/><path d="M61,38 L57,56 L53,56 L57,38Z"/>',
+      'lower-back':'<rect x="36" y="60" width="16" height="10" rx="3"/>',
+      quads:      '<rect x="30" y="80" width="12" height="22" rx="4"/><rect x="46" y="80" width="12" height="22" rx="4"/>',
+      hamstrings: '<rect x="31" y="82" width="10" height="20" rx="4"/><rect x="47" y="82" width="10" height="20" rx="4"/>',
+      glutes:     '<ellipse cx="44" cy="78" rx="13" ry="6"/>',
+      adductors:  '<path d="M41,80 L43,100 L45,100 L44,80Z"/><path d="M47,80 L45,100 L43,100 L44,80Z"/>',
+      abductors:  '<path d="M28,80 L30,100 L33,100 L31,80Z"/><path d="M60,80 L58,100 L55,100 L57,80Z"/>',
+      calves:     '<rect x="31" y="108" width="10" height="18" rx="4"/><rect x="47" y="108" width="10" height="18" rx="4"/>'
+    };
+    let s = '<svg viewBox="0 0 88 140" width="66" height="105" xmlns="http://www.w3.org/2000/svg">';
+    s += '<g fill="'+b+'">';
+    s += '<circle cx="44" cy="14" r="10"/>';
+    s += '<rect x="40" y="24" width="8" height="5" rx="2"/>';
+    s += '<rect x="26" y="30" width="36" height="42" rx="6"/>';
+    s += '<rect x="10" y="33" width="12" height="28" rx="5"/>';
+    s += '<rect x="66" y="33" width="12" height="28" rx="5"/>';
+    s += '<rect x="12" y="59" width="8" height="20" rx="3"/>';
+    s += '<rect x="68" y="59" width="8" height="20" rx="3"/>';
+    s += '<rect x="28" y="74" width="14" height="32" rx="5"/>';
+    s += '<rect x="46" y="74" width="14" height="32" rx="5"/>';
+    s += '<rect x="29" y="106" width="12" height="24" rx="4"/>';
+    s += '<rect x="47" y="106" width="12" height="24" rx="4"/>';
+    s += '</g>';
+    activeMuscles.forEach(function(m) {
+      if (parts[m]) s += '<g fill="'+color+'" opacity="0.75">'+parts[m]+'</g>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // ——— Peso ———
+  function saveWeight(id, person, value) {
+    const key = 'pp_w_' + person + '_' + id;
+    if (value === '' || value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, value);
+    updateWeightDisplay(id);
+  }
+
+  function updateWeightDisplay(id) {
+    const el = document.getElementById('wd-' + id);
+    if (!el) return;
+    const m = localStorage.getItem('pp_w_m_' + id);
+    const p = localStorage.getItem('pp_w_p_' + id);
+    const mTxt = m ? m + 'kg' : '—';
+    const pTxt = p ? p + 'kg' : '—';
+    el.textContent = 'M: ' + mTxt + '  ·  P: ' + pTxt;
+  }
+
+  // ——— Injetar campos de peso em todos os cards ———
+  (function initWeightFields() {
+    document.querySelectorAll('.exercise-card').forEach(function(card) {
+      const id = card.id.replace('card-', '');
+
+      const display = document.createElement('div');
+      display.className = 'ex-weight-display';
+      display.id = 'wd-' + id;
+      card.querySelector('.ex-info').appendChild(display);
+
+      const inputsDiv = document.createElement('div');
+      inputsDiv.className = 'weight-inputs';
+      inputsDiv.innerHTML =
+        '<div class="weight-field"><label>M</label><input type="number" inputmode="decimal" step="0.5" min="0" data-person="m" data-ex="'+id+'"><span>kg</span></div>' +
+        '<div class="weight-field"><label>P</label><input type="number" inputmode="decimal" step="0.5" min="0" data-person="p" data-ex="'+id+'"><span>kg</span></div>';
+      const expandArea = card.querySelector('.expand-area');
+      expandArea.insertBefore(inputsDiv, expandArea.firstChild);
+
+      inputsDiv.querySelectorAll('input').forEach(function(inp) {
+        const stored = localStorage.getItem('pp_w_' + inp.dataset.person + '_' + id);
+        if (stored) inp.value = stored;
+        inp.addEventListener('input', function() {
+          saveWeight(this.dataset.ex, this.dataset.person, this.value);
+        });
+      });
+
+      updateWeightDisplay(id);
+    });
+  })();
+
+  // ——— Injetar SVGs musculares ———
+  (function initMuscleSVGs() {
+    document.querySelectorAll('.exercise-card').forEach(function(card) {
+      const id = card.id.replace('card-', '');
+      const muscles = MUSCLE_MAP[id];
+      if (!muscles) return;
+      const tab = id[0];
+      const color = TAB_COLORS[tab];
+      const div = document.createElement('div');
+      div.className = 'muscle-svg-area';
+      div.innerHTML = createMuscleSVG(muscles, color);
+      const expandArea = card.querySelector('.expand-area');
+      expandArea.insertBefore(div, expandArea.firstChild);
     });
   })();
 
